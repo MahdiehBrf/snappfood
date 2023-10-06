@@ -1,4 +1,18 @@
-from django.db import models
+from django.db import models, IntegrityError
+
+
+class DelayReportCheckManager(models.Manager):
+    def create_for(self, order_id: int, delay_report_id: int):
+        queryset = self.get_queryset()
+        self._for_write = True
+        has_unchecked = queryset.filter(order_id=order_id).exclude(state=DelayReportCheck.State.CHECKED).exists()
+        if has_unchecked:
+            return False
+        try:
+            self.create(order_id=order_id, delay_report_id=delay_report_id)
+            return True
+        except IntegrityError:
+            return False
 
 
 class DelayReportCheck(models.Model):
@@ -17,3 +31,13 @@ class DelayReportCheck(models.Model):
     state = models.IntegerField(choices=State.choices, default=State.UNASSIGNED)
     # user
 
+    objects = DelayReportCheckManager()
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["order"],
+                name="%(app_label)s_%(class)s_unique_unchecked_order",
+                condition=models.Q(state__lte=1),
+            )
+        ]
