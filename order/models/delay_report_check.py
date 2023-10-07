@@ -1,8 +1,8 @@
-from django.db import models, IntegrityError
+from django.db import models, IntegrityError, transaction
 
 
 class DelayReportCheckManager(models.Manager):
-    def create_for(self, order_id: int, delay_report_id: int):
+    def create_for(self, order_id: int, delay_report_id: int) -> bool:
         queryset = self.get_queryset()
         self._for_write = True
         has_unchecked = queryset.filter(order_id=order_id).exclude(state=DelayReportCheck.State.CHECKED).exists()
@@ -13,6 +13,16 @@ class DelayReportCheckManager(models.Manager):
             return True
         except IntegrityError:
             return False
+
+    def find_and_assign_to(self, agent_id: int) -> bool:
+        queryset = self.get_queryset()
+        with transaction.atomic(using=self.db):
+            obj = queryset.select_for_update().filter(agent_id=None).first()
+            if not obj:
+                return False
+            obj.agent_id = agent_id
+            obj.save(update_fields=["agent_id"])
+        return True
 
 
 class DelayReportCheck(models.Model):
@@ -41,3 +51,4 @@ class DelayReportCheck(models.Model):
                 condition=models.Q(state__lte=1),
             )
         ]
+        ordering = ['created_at', ]
