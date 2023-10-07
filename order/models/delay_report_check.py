@@ -35,8 +35,8 @@ class DelayReportCheck(models.Model):
                               on_delete=models.deletion.CASCADE)
     agent = models.ForeignKey("agent.Agent", related_name="delay_report_checks",
                               on_delete=models.deletion.SET_NULL, null=True)
-    delay_report = models.ForeignKey("order.DelayReport", related_name="checks",
-                                     on_delete=models.deletion.CASCADE)
+    delay_report = models.OneToOneField("order.DelayReport", related_name="delay_check",
+                                        on_delete=models.deletion.CASCADE)
 
     state = models.IntegerField(choices=State.choices, default=State.UNASSIGNED)
     # user

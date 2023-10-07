@@ -126,3 +126,12 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+broker_url = 'amqp://guest:guest@localhost:5672/'
+CELERY_BROKER_URL = broker_url
+CELERY_TASK_TRACK_STARTED = True
+CELERY_TRACK_STARTED = True
+CELERY_ENABLE_UTC = False
+CELERY_TIMEZONE = "Asia/Tehran"
+CELERY_TASK_ALWAYS_EAGER = True
+CELERY_ALWAYS_EAGER = True

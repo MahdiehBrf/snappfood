@@ -2,7 +2,7 @@ from datetime import timezone, datetime
 
 from django.db import models, transaction
 
-from .delay_report_check import DelayReportCheck
+from ..tasks import create_check_for
 from ..services import re_estimate_delivery_hour
 
 
@@ -27,4 +27,4 @@ class DelayReport(models.Model):
         self.save()
 
     def create_check(self):
-        DelayReportCheck.objects.create_for(order_id=self.order_id, delay_report_id=self.id)
+        create_check_for.delay(order_id=self.order_id, delay_report_id=self.id)
