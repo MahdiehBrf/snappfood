@@ -1,5 +1,4 @@
-from datetime import datetime, timezone
-
+from django.utils import timezone
 from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import BasePermission
 
@@ -19,4 +18,4 @@ class HasOrderDelay(BasePermission):
 
     def has_permission(self, request, view):
         order_id = view.kwargs["order_id"]
-        return get_object_or_404(Order, pk=order_id).delivery_at < datetime.now(timezone.utc)
+        return get_object_or_404(Order, pk=order_id).delivery_at < timezone.now()
