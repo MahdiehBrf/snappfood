@@ -11,11 +11,7 @@ from order.models import DelayReportCheck
 class DelayReportCheckViewSet(GenericViewSet):
     queryset = DelayReportCheck.objects.all()
     # permission_classes = [agent]
-
-    def permission_denied(self, request, message=None, code=None):
-        if not message:
-            super().permission_denied(request, message, code)
-        raise PermissionDenied(detail=message, code=code)
+    authentication_classes = []
 
     @action(
         methods=["POST"],

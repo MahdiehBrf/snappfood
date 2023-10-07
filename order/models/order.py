@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from django.db import models
 
 
@@ -9,6 +11,6 @@ class Order(models.Model):
                                on_delete=models.deletion.PROTECT)
     # price
 
-    def update_delivery_at_hour(self, value: int):
-        self.delivery_at = self.delivery_at.replace(hour=value, minute=0, second=0, microsecond=0)
+    def update_delivery_at(self, value: datetime):
+        self.delivery_at = value
         self.save()

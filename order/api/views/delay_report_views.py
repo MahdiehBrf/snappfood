@@ -1,6 +1,7 @@
 from rest_framework import mixins
 from rest_framework.viewsets import GenericViewSet
 
+from order.api.permissions import HasOrderDelay
 from order.api.serializers.serializers import DelayReportCreateSerializer
 from order.models import DelayReport, Trip
 
@@ -8,13 +9,17 @@ from order.models import DelayReport, Trip
 class DelayReportViewSet(mixins.CreateModelMixin, GenericViewSet):
     queryset = DelayReport.objects.all()
     # permission_classes = [user]
+    authentication_classes = []
+
+    def get_permissions(self):
+        if self.action == 'create':
+            self.permission_classes = self.permission_classes + [HasOrderDelay, ]
+        return super().get_permissions()
 
     def perform_create(self, serializer):
         super().perform_create(serializer)
-        try:
-            trip_state = serializer.instance.order.trip.state
-        except Trip.DoesNotExist:
-            trip_state = None
+        trip = Trip.objects.filter(order_id=serializer.instance.order.id).only('state').first()
+        trip_state = trip.state if trip else None
         if trip_state in [Trip.State.ASSIGNED, Trip.State.AT_VENDOR, Trip.State.PICKED]:
             serializer.instance.update_order_delivery_at()
         else:
