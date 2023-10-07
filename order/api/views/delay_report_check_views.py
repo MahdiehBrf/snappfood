@@ -20,5 +20,5 @@ class DelayReportCheckViewSet(GenericViewSet):
     def assign(self, request, *args, **kwargs):
         # agent_id = self.request.user.id
         agent_id = int(request.data.get("agent_id"))
-        success = DelayReportCheck.objects.find_and_assign_to(agent_id)
+        success, _ = DelayReportCheck.objects.find_and_assign_to(agent_id)
         return Response(status=HTTP_200_OK, data={"success": success})

@@ -22,6 +22,6 @@ class OrderFactory(DjangoModelFactory):
 
 
     vendor = factory.SubFactory(VendorFactory)
-    created_at = factory.LazyAttribute(lambda _: timezone.now())
+    created_at = factory.LazyAttribute(lambda _: timezone.now() - timedelta(hours=1))
     submitted_at = factory.LazyAttribute(lambda obj: obj.created_at + timedelta(minutes=random.randint(0, 10)))
     delivery_at = factory.LazyAttribute(lambda obj: obj.created_at + timedelta(minutes=random.randint(0, 59)))

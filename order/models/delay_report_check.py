@@ -1,3 +1,5 @@
+from typing import Optional
+
 from django.db import models, IntegrityError, transaction
 
 
@@ -14,15 +16,15 @@ class DelayReportCheckManager(models.Manager):
         except IntegrityError:
             return False
 
-    def find_and_assign_to(self, agent_id: int) -> bool:
+    def find_and_assign_to(self, agent_id: int) -> (bool, Optional[int]):
         queryset = self.get_queryset()
         with transaction.atomic(using=self.db):
             obj = queryset.select_for_update().filter(agent_id=None).first()
             if not obj:
-                return False
+                return False, None
             obj.agent_id = agent_id
             obj.save(update_fields=["agent_id"])
-        return True
+        return True, obj
 
 
 class DelayReportCheck(models.Model):
