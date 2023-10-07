@@ -103,9 +103,6 @@ location/fixtures/****
 # Node modules
 node_modules
 
-behtarino/settings/personal_settings.py
-behtarino/settings/local_settings.py
-
 # dependencies
 .pnp
 .pnp.js

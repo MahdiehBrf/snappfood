@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/4.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
-
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -20,12 +20,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-^)3*i4dz5=#91urfg#w+(o56u0*pz#b*%usn4o4=t57romkwvc'
+SECRET_KEY = os.environ.get("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ["DEBUG"] == "True"
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", " ").split(" ")
 
 
 # Application definition
@@ -80,8 +80,12 @@ WSGI_APPLICATION = 'snappfood.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        "ENGINE": os.environ.get("SQL_ENGINE", "django.db.backends.sqlite3"),
+        "NAME": os.environ.get("SQL_DATABASE", BASE_DIR / "db.sqlite3"),
+        "USER": os.environ.get("SQL_USER", "user"),
+        "PASSWORD": os.environ.get("SQL_PASSWORD", "password"),
+        "HOST": os.environ.get("SQL_HOST", "localhost"),
+        "PORT": os.environ.get("SQL_PORT", "5432"),
     }
 }
 
@@ -127,11 +131,40 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-broker_url = 'amqp://guest:guest@localhost:5672/'
+
+broker_url = os.environ.get("BROKER_URL", "amqp://guest:guest@localhost:5672/")
 CELERY_BROKER_URL = broker_url
 CELERY_TASK_TRACK_STARTED = True
 CELERY_TRACK_STARTED = True
 CELERY_ENABLE_UTC = False
 CELERY_TIMEZONE = "Asia/Tehran"
-CELERY_TASK_ALWAYS_EAGER = True
-CELERY_ALWAYS_EAGER = True
+CELERY_TASK_ALWAYS_EAGER = DEBUG
+CELERY_ALWAYS_EAGER = DEBUG
+
+# LOGGING = {
+#     'disable_existing_loggers': False,
+#     'version': 1,
+#     'handlers': {
+#         'console': {
+#             # logging handler that outputs log messages to terminal
+#             'class': 'logging.StreamHandler',
+#             'level': 'DEBUG', # message level to be written to console
+#         },
+#     },
+#     'loggers': {
+#         '': {
+#             # this sets root level logger to log debug and higher level
+#             # logs to console. All other loggers inherit settings from
+#             # root level logger.
+#             'handlers': ['console'],
+#             'level': 'DEBUG',
+#             'propagate': False, # this tells logger to send logging message
+#                                 # to its parent (will send if set to True)
+#         },
+#         'django.db': {
+#             # django also has database level logging
+#             'level': 'DEBUG'
+#         },
+#     },
+# }
+
