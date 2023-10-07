@@ -1,1 +1,1 @@
-from .delay_report_views import DelayReportViewSet
+from .order_delay_report_views import OrderDelayReportViewSet

@@ -19,9 +19,11 @@ from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 
 from order.api.urls import order_router
+from vendor.api.urls import vendor_router
 
 router = DefaultRouter()
 router.registry.extend(order_router.registry)
+router.registry.extend(vendor_router.registry)
 
 urlpatterns = [
     path('admin/', admin.site.urls),

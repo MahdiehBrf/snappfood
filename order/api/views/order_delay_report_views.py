@@ -3,13 +3,15 @@ from rest_framework.viewsets import GenericViewSet
 
 from order.api.permissions import HasOrderDelay
 from order.api.serializers.serializers import DelayReportCreateSerializer
+from order.api.throttles import DelayReportThrottle
 from order.models import DelayReport, Trip
 
 
-class DelayReportViewSet(mixins.CreateModelMixin, GenericViewSet):
+class OrderDelayReportViewSet(mixins.CreateModelMixin, GenericViewSet):
     queryset = DelayReport.objects.all()
     # permission_classes = [user]
     authentication_classes = []
+    throttle_classes = [DelayReportThrottle, ]
 
     def get_permissions(self):
         if self.action == 'create':
